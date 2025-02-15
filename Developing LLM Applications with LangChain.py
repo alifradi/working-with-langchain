@@ -123,3 +123,34 @@ seq_chain = ({"learning_plan": learning_prompt | llm | StrOutputParser()}
 
 # Call the chain
 print(seq_chain.invoke({"activity": "play the harmonica"}))
+
+
+# exercise 7
+from langgraph.prebuilt.chat_agent_executor import create_react_agent
+from langchain_community.agent_toolkits.load_tools import load_tools
+# Define the tools
+tools = load_tools(["wikipedia"])
+
+# Define the agent
+agent = create_react_agent(llm, tools)
+
+# Invoke the agent
+response = agent.invoke({"messages": [("human", "How many people live in New York City?")]})
+print(response['messages'][-1].content)
+
+# exercise 8
+
+@tool
+def retrieve_customer_info(name: str) -> str:
+    """Retrieve customer information based on their name."""
+    customer_info = customers[customers['name'] == name]
+    return customer_info.to_string()
+
+# Create a ReAct agent
+agent = create_react_agent(llm, [retrieve_customer_info])
+
+print(create_react_agent.__module__)
+
+# Invoke the agent on the input
+messages = agent.invoke({"messages": [("human", "Create a summary of our customer: Peak Performance Co.")]})
+print(messages['messages'][-1].content)
